@@ -60,10 +60,7 @@ class IssueList(Resource):
     
     def post(self):
         args = self.parser.parse_args(strict=True)
-        try:
-            query_db('INSERT INTO issues(type, message, name, phone, email) VALUES(:type, :message, :name, :phone, :email)', args)
-        except Exception:
-            return { "message": "An internal error occured." }, 500
+        query_db('INSERT INTO issues(type, message, name, phone, email) VALUES(:type, :message, :name, :phone, :email)', args)
         return { "message": "Success" }, 400
 
 api.add_resource(IssueList, '/issues/')
