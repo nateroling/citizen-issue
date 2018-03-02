@@ -1,0 +1,72 @@
+html, body {
+    font-family: sans-serif;
+    background-color: #f5f5fa;
+}
+
+.App__title {
+    text-align: center;
+}
+
+.IssueForm {
+    background-color: white;
+    padding: 3em 2em;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    max-width: 400px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.IssueForm__input {
+    grid-column: span 2;
+    display: block;
+    border: 1px solid #ccc;
+    background: white;
+    padding: 0.5em;
+    border-radius: 2px;
+
+    /* remove default arrow on select */
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none;       
+
+    /* remove resize control on textarea */
+    resize: none;
+}
+
+.IssueForm__input:focus {
+    outline: none;
+    box-shadow: 0 0 4px #666;
+}
+
+.IssueForm__divider {
+    grid-column: span 2;
+    width: 50%;
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 1em auto;
+}
+
+
+.IssueForm__phone {
+    grid-column: span 1;
+}
+
+.IssueForm__email {
+    grid-column: span 1;
+}
+.IssueForm__message {
+    height: 8em;
+}
+
+.IssueForm__submit {
+    margin-top: 1em;
+    border: none;
+    background-color: #f69033;
+    text-align: center;
+    padding: 1.25em;
+    color: white;
+}
