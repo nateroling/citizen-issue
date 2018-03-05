@@ -135,10 +135,16 @@ class IssueForm extends React.Component {
                 statusMessage = null;
         }
         
+        const selectTypeClasses = ["IssueForm__input", "IssueForm__type"];
+        if (this.state.type == IssueForm.typePlaceholder) {
+            // Allows us to style the placeholder value differently.
+            selectTypeClasses.push("placeholder");
+        }
+
         return (
             <form className="IssueForm" onSubmit={this.onSubmit}>
-                <select value={this.state.type} onChange={this.onChange} name="type" className="IssueForm__input IssueForm__type" required>
-                    <option disabled hidden>{IssueForm.typePlaceholder}</option>
+                <select value={this.state.type} onChange={this.onChange} name="type" className={selectTypeClasses.join(' ')} required>
+                    <option disabled>{IssueForm.typePlaceholder}</option>
                     { IssueForm.typeOptions.map((issueType) => <option key={issueType}>{issueType}</option>) }
                 </select>
                 <textarea value={this.state.message} name="message" onChange={this.onChange} placeholder="Write your message..." className="IssueForm__input IssueForm__message" required></textarea>

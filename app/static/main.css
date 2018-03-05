@@ -31,17 +31,18 @@ html, body {
     resize: none;
 }
 
-.IssueForm__input:invalid {
-    /* remove default styling for empty required fields */
-    box-shadow: none;
-    outline: none;
-}
-
 .IssueForm__input:focus {
     outline: none;
     box-shadow: 0 0 4px #666;
 }
 
+/* Remove default styling for empty required fields */
+.IssueForm__input:invalid {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Special select styling */
 .IssueForm select {
     -webkit-appearance: none; 
     -moz-appearance: none;
@@ -51,6 +52,12 @@ html, body {
     background-position: calc(100% - 10px) 60%;
     background-repeat: no-repeat;
 }
+
+/* Placeholder text color */
+.IssueForm select.placeholder { color: #666; }
+::-webkit-input-placeholder { color: #666; }
+:-ms-input-placeholder { color: #666; }
+:-moz-placeholder { color: #666; opacity: 1; }
 
 .IssueForm__divider {
     grid-column: span 2;
