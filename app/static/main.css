@@ -37,6 +37,12 @@ html, body {
     resize: none;
 }
 
+.IssueForm__input:invalid {
+    /* remove default styling for empty required fields */
+    box-shadow: inherit;
+    outline: inherit;
+}
+
 .IssueForm__input:focus {
     outline: none;
     box-shadow: 0 0 4px #666;
