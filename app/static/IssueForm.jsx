@@ -1,15 +1,6 @@
 class IssueForm extends React.Component {
 
     /*
-    An IssueForm can be in one of three possible modes.
-    */
-    static mode = Object.freeze({
-        invalid:    0, // Initial mode. Fields are empty or invalid.
-        valid:      1, // All fields are valid. Submit button enabled.
-        submitting: 2, // Submitting to the server.
-    });
-
-    /*
     Placeholder and options for issue type.
     */
     static typePlaceholder = "Select an issue";
@@ -36,12 +27,11 @@ class IssueForm extends React.Component {
 
 
     /*
-    Set up initial state for mode and form values.
+    Set up initial state.
     */
     constructor(props) {
         super(props);
         this.state = {
-            mode: IssueForm.mode.invalid,
             completionState: IssueForm.completionState.incomplete,
             type: IssueForm.typePlaceholder,
             message: "",
@@ -71,7 +61,6 @@ class IssueForm extends React.Component {
     Change handler for form inputs.
     - updates our component state when the inputs are changed.
     - see https://reactjs.org/docs/forms.html for details.
-    - also validates form and updates our mode.
     */
     onChange = (event) => {
         const target = event.target;
@@ -80,11 +69,6 @@ class IssueForm extends React.Component {
         this.setState({
             [name]: value
         });
-
-        // Set mode (invalid or valid).
-        this.setState({
-            mode: (this.validate() ? IssueForm.mode.valid : IssueForm.mode.invalid)
-        })
     }
 
     /*
@@ -95,7 +79,7 @@ class IssueForm extends React.Component {
     */
     onSubmit = (event) => {
         event.preventDefault();
-        if (this.state.mode != IssueForm.mode.valid) { return; }
+        if (!this.validate()) { return; }
         fetch(IssueForm.postUrl, {
             method: "POST",
             headers: {
@@ -132,9 +116,7 @@ class IssueForm extends React.Component {
             this.setState({
                 completionState: IssueForm.completionState.error
             })
-        })
-        
-        ;
+        });
     }
 
     /*
@@ -164,7 +146,7 @@ class IssueForm extends React.Component {
                 <input value={this.state.name} onChange={this.onChange} type="text" name="name" placeholder="Name" className="IssueForm__input IssueForm__name" required />
                 <input value={this.state.phone} onChange={this.onChange} type="text" name="phone" placeholder="Phone" className="IssueForm__input IssueForm__phone" required />
                 <input value={this.state.email} onChange={this.onChange} type="text" name="email" placeholder="Email" className="IssueForm__input IssueForm__email" required />
-                <input type="submit" disabled={ this.state.mode != IssueForm.mode.valid } value="Submit" className="IssueForm__input IssueForm__submit" required />
+                <input type="submit" disabled={ !this.validate() } value="Submit" className="IssueForm__input IssueForm__submit" required />
                 { statusMessage  }
             </form>
         )
