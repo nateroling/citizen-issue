@@ -98,6 +98,10 @@ class IssueForm extends React.Component {
         if (this.state.mode != IssueForm.mode.valid) { return; }
         fetch(IssueForm.postUrl, {
             method: "POST",
+            headers: {
+                Accept: "application/json",
+                'Content-Type': "application/json"
+            },
             body: JSON.stringify({
                 type: this.state.type,
                 message: this.state.message,
@@ -117,7 +121,14 @@ class IssueForm extends React.Component {
                 email: "",
                 completionState: IssueForm.completionState.success,
             })
+            // Clear our completion message after a timeout.
+            setTimeout(() => {
+                this.setState({
+                    completionState: null
+                })
+            }, 2000);
         }).catch(error => {
+            console.log(error);
             this.setState({
                 completionState: IssueForm.completionState.error
             })
@@ -148,7 +159,7 @@ class IssueForm extends React.Component {
                     <option disabled hidden>{IssueForm.typePlaceholder}</option>
                     { IssueForm.typeOptions.map((issueType) => <option key={issueType}>{issueType}</option>) }
                 </select>
-                <textarea name="message" onChange={this.onChange} placeholder="Write your message..." className="IssueForm__input IssueForm__message" required></textarea>
+                <textarea value={this.state.message} name="message" onChange={this.onChange} placeholder="Write your message..." className="IssueForm__input IssueForm__message" required></textarea>
                 <hr className="IssueForm__divider" />
                 <input value={this.state.name} onChange={this.onChange} type="text" name="name" placeholder="Name" className="IssueForm__input IssueForm__name" required />
                 <input value={this.state.phone} onChange={this.onChange} type="text" name="phone" placeholder="Phone" className="IssueForm__input IssueForm__phone" required />
