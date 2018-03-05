@@ -27,6 +27,8 @@ class IssueForm extends React.Component {
         error: 2,
     });
 
+    static postUrl = "/issues/";
+
     /*
     Maximally-simple email regex: https://stackoverflow.com/a/742455
     */
@@ -57,7 +59,7 @@ class IssueForm extends React.Component {
     */
     validate = () => {
         return (
-            IssueForm.typeOptions.find(this.state.type) &&
+            IssueForm.typeOptions.indexOf(this.state.type) != -1 &&
             this.state.message != "" &&
             this.state.name != "" &&
             this.state.phone != "" &&
@@ -66,7 +68,7 @@ class IssueForm extends React.Component {
     }
 
     /*
-    onChange handler for form inputs.
+    Change handler for form inputs.
     - updates our component state when the inputs are changed.
     - see https://reactjs.org/docs/forms.html for details.
     - also validates form and updates our mode.
@@ -81,8 +83,47 @@ class IssueForm extends React.Component {
 
         // Set mode (invalid or valid).
         this.setState({
-            'mode': (this.validate() ? IssueForm.mode.valid : IssueForm.mode.invalid)
+            mode: (this.validate() ? IssueForm.mode.valid : IssueForm.mode.invalid)
         })
+    }
+
+    /*
+    Submit handler for the form.
+    - Sends the API request
+    - Sets loading state
+
+    */
+    onSubmit = (event) => {
+        event.preventDefault();
+        if (this.state.mode != IssueForm.mode.valid) { return; }
+        fetch(IssueForm.postUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                type: this.state.type,
+                message: this.state.message,
+                name: this.state.name,
+                phone: this.state.phone,
+                email: this.state.email
+            })
+        }).then(response => {
+            if (!response.ok) { throw Error(response.statusText); }
+            return response;
+        }).then(response => {
+            this.setState({
+                type: IssueForm.typePlaceholder,
+                message: "",
+                name: "",
+                phone: "",
+                email: "",
+                completionState: IssueForm.completionState.success,
+            })
+        }).catch(error => {
+            this.setState({
+                completionState: IssueForm.completionState.error
+            })
+        })
+        
+        ;
     }
 
     /*
@@ -92,17 +133,17 @@ class IssueForm extends React.Component {
         let statusMessage;
         switch (this.state.completionState) {
             case IssueForm.completionState.success:
-                statusMessage = <div class="IssueForm__successMessage">Issue submitted. Thank you!</div>;
+                statusMessage = <div className="IssueForm__successMessage">Issue submitted. Thank you!</div>;
                 break;
             case IssueForm.completionState.error:
-                statusMessage = <div class="IssueForm__errorMessage">There was an error. Please reload and try again.</div>;
+                statusMessage = <div className="IssueForm__errorMessage">There was an error. Please reload and try again.</div>;
                 break;
             default:
                 statusMessage = null;
         }
         
         return (
-            <form className="IssueForm">
+            <form className="IssueForm" onSubmit={this.onSubmit}>
                 <select value={this.state.type} onChange={this.onChange} name="type" className="IssueForm__input IssueForm__type" required>
                     <option disabled hidden>{IssueForm.typePlaceholder}</option>
                     { IssueForm.typeOptions.map((issueType) => <option key={issueType}>{issueType}</option>) }
