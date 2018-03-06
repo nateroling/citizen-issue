@@ -1,20 +1,23 @@
-html, body {
-    font-family: sans-serif;
+body {
+    font-family: 'Lato', sans-serif;
+    color: #333;
     background-color: #f5f5fa;
 }
 
 .App__title {
     text-align: center;
+    font-weight: 300;
+    font-size: 40px;
+    margin-bottom: 1.8em;
 }
 
 .IssueForm {
+    max-width: 435px;
+    padding: 50px 40px;
     background-color: white;
-    padding: 3em 2em;
     box-shadow: 0 0 4px rgba(0,0,0,0.1);
     border-radius: 2px;
-    max-width: 400px;
     margin: 0 auto;
-
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 10px;
@@ -23,7 +26,7 @@ html, body {
 .IssueForm__input {
     grid-column: span 2;
     display: block;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     background: white;
     padding: 0.5em;
     border-radius: 2px;
@@ -48,7 +51,7 @@ html, body {
     -moz-appearance: none;
     appearance: none;   
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='grey'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
-    background-size: 12px;
+    background-size: 8px;
     background-position: calc(100% - 10px) 60%;
     background-repeat: no-repeat;
 }
@@ -87,6 +90,7 @@ html, body {
 .IssueForm__errorMessage { color: red; }
 
 .IssueForm__submit {
+    font-weight: bold;
     margin-top: 1em;
     border: none;
     background-color: #f69033;
