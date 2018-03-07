@@ -23,7 +23,7 @@ class IssueForm extends React.Component {
     /*
     Maximally-simple email regex: https://stackoverflow.com/a/742455
     */
-    static emailRegex = /^\S+@\S+$/;
+    static emailRegex = /^\S+@\S+\.\S+$/;
 
 
     /*
