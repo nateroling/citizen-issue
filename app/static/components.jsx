@@ -1,9 +1,14 @@
-const ISSUES_URL = "/issues";
+const ISSUES_URL = "/issues/";
 const REQUEST_STATE = Object.freeze({
     idle: 0,
     success: 1,
     error: 2,
 });
+const COLUMN_NAMES = ["Issue Type", "Message", "Name", "Phone", "Email"];
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+
+const ISSUE_TYPE_PLACEHOLDER = "Select an issue";
+const ISSUE_TYPE_OPTIONS = [ "Cat Meowing", "Dog Barking", "Flooding", "Pot Hole", "Stop Sign Down" ];
 
 /*
 Simple GET wrapper around fetch
@@ -65,7 +70,7 @@ class IssueApp extends React.Component {
     }
 
     onSubmit = (issueData) => {
-        postJson(IssueForm.postUrl, issueData).then(response => {
+        postJson(ISSUES_URL, issueData).then(response => {
             this.onSuccess();
         }).catch(error => {
             this.onError();
@@ -115,23 +120,6 @@ class IssueApp extends React.Component {
 
 class IssueForm extends React.Component {
 
-    /*
-    Placeholder and options for issue type.
-    */
-    static typePlaceholder = "Select an issue";
-    static typeOptions = Object.freeze([
-        "Cat Meowing",
-        "Dog Barking",
-        "Flooding",
-        "Pot Hole",
-        "Stop Sign Down",
-    ]);
-
-    static postUrl = "/issues/";
-
-    // Maximally-simple email regex: https://stackoverflow.com/a/742455
-    static emailRegex = /^\S+@\S+\.\S+$/;
-
     static defaultProps = {
         onSubmit: () => {},
         requestState: REQUEST_STATE.idle
@@ -144,7 +132,7 @@ class IssueForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            type: IssueForm.typePlaceholder,
+            type: ISSUE_TYPE_PLACEHOLDER,
             message: "",
             name: "",
             phone: "",
@@ -160,11 +148,11 @@ class IssueForm extends React.Component {
     */
     validate = () => {
         return (
-            IssueForm.typeOptions.indexOf(this.state.type) != -1 &&
+            ISSUE_TYPE_OPTIONS.indexOf(this.state.type) != -1 &&
             this.state.message != "" &&
             this.state.name != "" &&
             this.state.phone != "" &&
-            IssueForm.emailRegex.exec(this.state.email)
+            EMAIL_REGEX.exec(this.state.email)
         )
     }
 
@@ -200,7 +188,7 @@ class IssueForm extends React.Component {
 
         // Clear form.
         this.setState({
-            type: IssueForm.typePlaceholder,
+            type: ISSUE_TYPE_PLACEHOLDER,
             message: "",
             name: "",
             phone: "",
@@ -225,7 +213,7 @@ class IssueForm extends React.Component {
         }
 
         const selectTypeClasses = ["IssueForm__input", "IssueForm__type"];
-        if (this.state.type == IssueForm.typePlaceholder) {
+        if (this.state.type == ISSUE_TYPE_PLACEHOLDER) {
             // Allows us to style the placeholder value differently.
             selectTypeClasses.push("placeholder");
         }
@@ -233,8 +221,8 @@ class IssueForm extends React.Component {
         return (
             <form className="IssueForm" onSubmit={this.onSubmit}>
                 <select value={this.state.type} onChange={this.onChange} name="type" className={selectTypeClasses.join(' ')} required>
-                    <option disabled>{IssueForm.typePlaceholder}</option>
-                    {IssueForm.typeOptions.map((issueType) => <option key={issueType}>{issueType}</option>)}
+                    <option disabled>{ISSUE_TYPE_PLACEHOLDER}</option>
+                    {ISSUE_TYPE_OPTIONS.map((issueType) => <option key={issueType}>{issueType}</option>)}
                 </select>
                 <textarea value={this.state.message} name="message" onChange={this.onChange} placeholder="Write your message..." className="IssueForm__input IssueForm__message" required></textarea>
                 <hr className="IssueForm__divider" />
@@ -251,13 +239,9 @@ class IssueForm extends React.Component {
 
 class IssueTable extends React.Component {
 
-    static getUrl = "/issues/";
-
     static defaultProps = {
         issues: []
     }
-
-    static columnNames = ["Issue Type", "Message", "Name", "Phone", "Email"];
 
     /*
     Set up initial state.
@@ -270,7 +254,7 @@ class IssueTable extends React.Component {
     Render the component.
     */
     render() {
-        const cols = IssueTable.columnNames.map((name) => <th key={name}>{name}</th>);
+        const cols = COLUMN_NAMES.map((name) => <th key={name}>{name}</th>);
 
         const rows = this.props.issues.map((issue, idx) => 
             <tr key={idx}>
