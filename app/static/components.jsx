@@ -1,20 +1,40 @@
-const ISSUES_URL = "/issues/";
-const REQUEST_STATE = Object.freeze({
-    idle: 0,
-    success: 1,
-    error: 2,
-});
-const COLUMN_NAMES = ["Issue Type", "Message", "Name", "Phone", "Email"];
-const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+/*
+Constants
+*/
 
+// URL for POSTing new issues and GETing all issues.
+const ISSUES_URL = "/issues/";
+
+// Enum of possible states. The current state will be passed to the IssueForm to
+// control display of success or error messages.
+const REQUEST_STATE = { idle: 0, success: 1, error: 2, };
+
+// Names of columns for the IssueTable.
+const COLUMN_NAMES = ["Issue Type", "Message", "Name", "Phone", "Email"];
+
+// Placeholder text for the Issue Type <select> element.
 const ISSUE_TYPE_PLACEHOLDER = "Select an issue";
+
+// Option text for the Issue Type <select> element.
 const ISSUE_TYPE_OPTIONS = [ "Cat Meowing", "Dog Barking", "Flooding", "Pot Hole", "Stop Sign Down" ];
 
+// Regular expression used to validate email addresses.
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+
+
 /*
-Simple GET wrapper around fetch
+Request helpers. Simple wrappers around fetch().
+
+postJson
 - sets Accept header
 - treats non-200 responses as errors.
+
+getJson
+- sets Accept and Content-Type headers
+- stringifies JSON body
+- treats non-200 responses as errors.
 */
+
 function getJson(url) {
     return fetch(url, {
         method: "GET",
@@ -27,12 +47,6 @@ function getJson(url) {
     });
 }
 
-/*
-Simple POST wrapper around fetch
-- sets Accept and Content-Type headers
-- stringifies JSON body
-- treats non-200 responses as errors.
-*/
 function postJson(url, body) {
     return fetch(url, {
         method: "POST",
@@ -47,8 +61,26 @@ function postJson(url, body) {
     });
 }
 
+
+/*
+React Components
+
+IssueApp
+- Handles api requests.
+- Passes onSubmit handler to IssueForm to handle submission of issue data.
+- Passes requestState to IssueForm to control display of error/success messages.
+
+IssueForm
+- Contains form controls.
+
+IssueTable
+- Gets issues from IssueApp and renders a table.
+
+*/
+
 class IssueApp extends React.Component {
 
+    // Set initial state.
     constructor(props) {
         super(props);
         this.state = {
@@ -57,6 +89,7 @@ class IssueApp extends React.Component {
         };
     }
 
+    // Fetch a list of issues from the API.
     fetchIssues() {
         getJson(ISSUES_URL).then(response => {
             response.json().then(issues => {
@@ -69,6 +102,7 @@ class IssueApp extends React.Component {
         });
     }
 
+    // Submit the issueData to the API.
     onSubmit = (issueData) => {
         postJson(ISSUES_URL, issueData).then(response => {
             this.onSuccess();
@@ -81,11 +115,9 @@ class IssueApp extends React.Component {
         });
     }
 
-    /*
-    Handle successful issue submission.
-    - Re-fetch the issues for display (inefficient but simple).
-    - Set success state to show success message, then clear it after a timeout.
-    */
+    // Handle successful issue submission.
+    // - Re-fetch the issues for display (inefficient but simple).
+    // - Set success state to show success message, then clear it after timeout.
     onSuccess() {
         this.fetchIssues();
 
@@ -95,18 +127,12 @@ class IssueApp extends React.Component {
         }, 2000);
     }
 
-    /*
-    Fetch issues when component first loads.
-    */
+    // Fetch issues when component first loads.
     componentDidMount() {
         this.fetchIssues();
     }
 
-    /*
-    Render the issue form and table components.
-    - Pass onSubmit handler and request state (idle, success, error) to form.
-    - Pass list of issues to IssueTable.
-    */
+    // Render the issue form and table components.
     render() {
         return (
             <div className="App">
@@ -120,15 +146,14 @@ class IssueApp extends React.Component {
 
 class IssueForm extends React.Component {
 
+    // Default props.
     static defaultProps = {
         onSubmit: () => {},
         requestState: REQUEST_STATE.idle
     }
 
 
-    /*
-    Set up initial state.
-    */
+    // Set initial state.
     constructor(props) {
         super(props);
         this.state = {
@@ -140,12 +165,10 @@ class IssueForm extends React.Component {
         };
     }
 
-    /*
-    Simple validation.
-    - valid issue type is selected
-    - message, name and phone are not blank
-    - email matches our regex
-    */
+    // Simple validation.
+    // - valid issue type is selected
+    // - message, name and phone are not blank
+    // - email matches our regex
     validate = () => {
         return (
             ISSUE_TYPE_OPTIONS.indexOf(this.state.type) != -1 &&
@@ -156,11 +179,9 @@ class IssueForm extends React.Component {
         )
     }
 
-    /*
-    Change handler for form inputs.
-    - updates our component state when the inputs are changed.
-    - see https://reactjs.org/docs/forms.html for details.
-    */
+    // Change handler for form inputs.
+    // - updates our component state when the inputs are changed.
+    // - see https://reactjs.org/docs/forms.html for details.
     onChange = (event) => {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -170,13 +191,12 @@ class IssueForm extends React.Component {
         });
     }
 
-    /*
-    Submit handler for the form.
-    - Sends issue data to provided onSubmit handler
-    - Clears form
-    */
+    // Submit handler for the form.
+    // - Sends issue data to onSubmit prop.
+    // - Clears form
     onSubmit = (event) => {
         event.preventDefault();
+
         // POST is handled by parent component.
         this.props.onSubmit({
             type: this.state.type,
@@ -196,10 +216,9 @@ class IssueForm extends React.Component {
         })
     }
 
-    /*
-    Render the component.
-    */
+    // Render component.
     render() {
+        // Determine the status message to show based on the requestState prop.
         let statusMessage;
         switch (this.props.requestState) {
             case REQUEST_STATE.success:
@@ -212,12 +231,15 @@ class IssueForm extends React.Component {
                 statusMessage = null;
         }
 
+        // Set a `placeholder` class on the <select> element if the placeholder text is selected.
+        // This is just used for styling.
         const selectTypeClasses = ["IssueForm__input", "IssueForm__type"];
         if (this.state.type == ISSUE_TYPE_PLACEHOLDER) {
             // Allows us to style the placeholder value differently.
             selectTypeClasses.push("placeholder");
         }
 
+        // Render the form.
         return (
             <form className="IssueForm" onSubmit={this.onSubmit}>
                 <select value={this.state.type} onChange={this.onChange} name="type" className={selectTypeClasses.join(' ')} required>
@@ -234,28 +256,26 @@ class IssueForm extends React.Component {
             </form>
         )
     }
-
 }
 
 class IssueTable extends React.Component {
 
+    // Default props.
     static defaultProps = {
         issues: []
     }
 
-    /*
-    Set up initial state.
-    */
+    // Set initial state.
     constructor(props) {
         super(props);
     }
 
-    /*
-    Render the component.
-    */
+    // Render the component.
     render() {
+        // Build list of <th> from COLUMN_NAMES.
         const cols = COLUMN_NAMES.map((name) => <th key={name}>{name}</th>);
 
+        // Build list of <tr> from props.issues
         const rows = this.props.issues.map((issue, idx) => 
             <tr key={idx}>
                 <td>{issue.type}</td>
@@ -266,13 +286,13 @@ class IssueTable extends React.Component {
             </tr>
         );
 
+        // Render the table.
         return (
             <table className="IssueTable">
                 <thead><tr>{cols}</tr></thead>
                 <tbody>{rows}</tbody>
             </table>
         )
-
     }
 
 }
