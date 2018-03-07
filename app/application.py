@@ -1,5 +1,6 @@
+import os
 import sqlite3
-from flask import Flask
+from flask import Flask, redirect
 from flask_restful import Resource, Api, reqparse
 
 app = Flask(__name__)
@@ -8,7 +9,8 @@ app = Flask(__name__)
 
 # Database setup.
 # http://flask.pocoo.org/docs/0.12/patterns/sqlite3/
-DATABASE = 'db.sqlite3'
+HERE = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(HERE, 'db.sqlite3')
 
 def query_db(query, args=(), one=False):
     """
@@ -66,8 +68,15 @@ class IssueList(Resource):
 api.add_resource(IssueList, '/issues/')
 
 
+# Redirect / to our static index page for simplicity.
+@app.route("/")
+def index():
+    return redirect("/static/index.html")
 
 # Start app in debug mode when this file is executed.
+# - create the database table if necessary
+# - Bind to 0.0.0.0 to access via exposed docker port
+#   - https://stackoverflow.com/questions/7023052/configure-flask-dev-server-to-be-visible-across-the-network
 if __name__ == '__main__':
     query_db('CREATE TABLE IF NOT EXISTS issues (type text, message text, name text, phone text, email text)')
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
