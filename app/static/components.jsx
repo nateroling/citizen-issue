@@ -137,7 +137,9 @@ class IssueApp extends React.Component {
         return (
             <div className="App">
                 <h1 className="App__title">Citizen Issue</h1>
+                <h2 className="App__section_title">Submit an Issue</h2>
                 <IssueForm onSubmit={(issueData) => this.onSubmit(issueData)} requestState={this.state.requestState} />
+                <h2 className="App__section_title">Submitted Issues</h2>
                 <IssueTable issues={this.state.issues}/>
             </div>
         );
@@ -288,10 +290,12 @@ class IssueTable extends React.Component {
 
         // Render the table.
         return (
-            <table className="IssueTable">
-                <thead><tr>{cols}</tr></thead>
-                <tbody>{rows}</tbody>
-            </table>
+            <div className="IssueTable">
+                <table>
+                    <thead><tr>{cols}</tr></thead>
+                    <tbody>{rows}</tbody>
+                </table>
+            </div>
         )
     }
 
