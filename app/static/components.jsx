@@ -1,4 +1,9 @@
 const ISSUES_URL = "/issues";
+const REQUEST_STATE = Object.freeze({
+    idle: 0,
+    success: 1,
+    error: 2,
+});
 
 /*
 Simple GET wrapper around fetch
@@ -42,7 +47,8 @@ class IssueApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            issues: []
+            issues: [],
+            requestState: REQUEST_STATE.idle
         };
     }
 
@@ -58,19 +64,49 @@ class IssueApp extends React.Component {
         });
     }
 
-    onSubmit(issueData) {
+    onSubmit = (issueData) => {
+        postJson(IssueForm.postUrl, issueData).then(response => {
+            this.onSuccess();
+        }).catch(error => {
+            this.onError();
+            console.log(error);
+            this.setState({
+                requestState: REQUEST_STATE.error
+            })
+        });
+    }
+
+    /*
+    Handle successful issue submission.
+    - Re-fetch the issues for display (inefficient but simple).
+    - Set success state to show success message, then clear it after a timeout.
+    */
+    onSuccess() {
+        this.fetchIssues();
+
+        this.setState({ requestState: REQUEST_STATE.success });
+        setTimeout(() => {
+            this.setState({ requestState: REQUEST_STATE.idle })
+        }, 2000);
+    }
+
+    /*
+    Fetch issues when component first loads.
+    */
+    componentDidMount() {
         this.fetchIssues();
     }
 
-    componentWillMount() {
-        this.fetchIssues();
-    }
-
+    /*
+    Render the issue form and table components.
+    - Pass onSubmit handler and request state (idle, success, error) to form.
+    - Pass list of issues to IssueTable.
+    */
     render() {
         return (
             <div className="App">
                 <h1 className="App__title">Citizen Issue</h1>
-                <IssueForm onSubmit={(issueData) => this.onSubmit(issueData)} />
+                <IssueForm onSubmit={(issueData) => this.onSubmit(issueData)} requestState={this.state.requestState} />
                 <IssueTable issues={this.state.issues}/>
             </div>
         );
@@ -91,19 +127,14 @@ class IssueForm extends React.Component {
         "Stop Sign Down",
     ]);
 
-    static completionState = Object.freeze({
-        incomplete: 0,
-        success: 1,
-        error: 2,
-    });
-
     static postUrl = "/issues/";
 
     // Maximally-simple email regex: https://stackoverflow.com/a/742455
     static emailRegex = /^\S+@\S+\.\S+$/;
 
     static defaultProps = {
-        onSubmit: () => {}
+        onSubmit: () => {},
+        requestState: REQUEST_STATE.idle
     }
 
 
@@ -113,7 +144,6 @@ class IssueForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            completionState: IssueForm.completionState.incomplete,
             type: IssueForm.typePlaceholder,
             message: "",
             name: "",
@@ -154,48 +184,28 @@ class IssueForm extends React.Component {
 
     /*
     Submit handler for the form.
-    - Sends the API request
-    - Sets loading state
-    
+    - Sends issue data to provided onSubmit handler
+    - Clears form
     */
     onSubmit = (event) => {
-        issueData = {
-            type: this.state.type,
-            message: this.state.message,
-            name: this.state.name,
-            phone: this.state.phone,
-            email: this.state.email
-        }
-        this.props.onSubmit(issueData);
         event.preventDefault();
-        if (!this.validate()) { return; }
-        postJson(IssueForm.postUrl, {
+        // POST is handled by parent component.
+        this.props.onSubmit({
             type: this.state.type,
             message: this.state.message,
             name: this.state.name,
             phone: this.state.phone,
             email: this.state.email
-        }).then(response => {
-            this.setState({
-                type: IssueForm.typePlaceholder,
-                message: "",
-                name: "",
-                phone: "",
-                email: "",
-                completionState: IssueForm.completionState.success,
-            })
-            // Clear our completion message after a timeout.
-            setTimeout(() => {
-                this.setState({
-                    completionState: null
-                })
-            }, 2000);
-        }).catch(error => {
-            console.log(error);
-            this.setState({
-                completionState: IssueForm.completionState.error
-            })
         });
+
+        // Clear form.
+        this.setState({
+            type: IssueForm.typePlaceholder,
+            message: "",
+            name: "",
+            phone: "",
+            email: ""
+        })
     }
 
     /*
@@ -203,11 +213,11 @@ class IssueForm extends React.Component {
     */
     render() {
         let statusMessage;
-        switch (this.state.completionState) {
-            case IssueForm.completionState.success:
+        switch (this.props.requestState) {
+            case REQUEST_STATE.success:
                 statusMessage = <div className="IssueForm__successMessage">Issue submitted. Thank you!</div>;
                 break;
-            case IssueForm.completionState.error:
+            case REQUEST_STATE.error:
                 statusMessage = <div className="IssueForm__errorMessage">There was an error. Please reload and try again.</div>;
                 break;
             default:
