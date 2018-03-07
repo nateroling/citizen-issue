@@ -10,10 +10,7 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <div class="App">
-        <h1 class="App__title">Citizen Issue</h1>
-        <div class="App__body" id="issue-form-container"/>
-    </div>
+    <div id="issue-app-container"></div>
 
     <!--
         Load React, ReactDOM, and Babel to build our JSX component.
@@ -29,10 +26,10 @@
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/jsx" src="IssueForm.jsx"></script>
+    <script type="text/jsx" src="components.jsx"></script>
     <!-- Render our IssueForm component on the page. -->
     <script type="text/babel">
-        ReactDOM.render(React.createElement(IssueForm), document.getElementById("issue-form-container"));
+        ReactDOM.render(React.createElement(IssueApp), document.getElementById("issue-app-container"));
     </script>
 
 </body>
