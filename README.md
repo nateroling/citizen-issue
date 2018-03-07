@@ -9,16 +9,18 @@ This is an example project, part of the interview process for Cartegraph.
 - React
 
 ## Running
-You will need to have [Docker][1] installed.
-
-Build and run the container:
-
-    $ docker build -t citizen-issue .
-    $ docker run -p 8080:80 citizen-issue
-
-The application will be available at <http://localhost:8080>.
+You can run via Docker with docker-compose, or with Python directly.
 
 
+### Recommended: Running with Docker
 
+To run the application with [Docker](https://www.docker.com/community-edition), run:
 
-[1]: https://www.docker.com/community-edition
+    docker-compose up
+
+Alternately, install the required packages and run with Python:
+
+    pip install -r app/requirements.txt
+    python app/application.py
+
+The application will be available at http://localhost:5000.
