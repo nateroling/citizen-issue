@@ -107,7 +107,6 @@ class IssueApp extends React.Component {
         postJson(ISSUES_URL, issueData).then(response => {
             this.onSuccess();
         }).catch(error => {
-            this.onError();
             console.log(error);
             this.setState({
                 requestState: REQUEST_STATE.error
@@ -278,8 +277,8 @@ class IssueTable extends React.Component {
         const cols = COLUMN_NAMES.map((name) => <th key={name}>{name}</th>);
 
         // Build list of <tr> from props.issues
-        const rows = this.props.issues.map((issue, idx) => 
-            <tr key={idx}>
+        const rows = this.props.issues.map((issue) => 
+            <tr key={issue.id}>
                 <td>{issue.type}</td>
                 <td>{issue.message}</td>
                 <td>{issue.name}</td>
