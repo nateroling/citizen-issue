@@ -64,11 +64,12 @@ class IssueList(Resource):
 
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('type',    type=str, required=True)
-        self.parser.add_argument('message', type=str, required=True)
-        self.parser.add_argument('name',    type=str, required=True)
-        self.parser.add_argument('phone',   type=str, required=True)
-        self.parser.add_argument('email',   type=str, required=True)
+        self.parser.add_argument('type',     type=str, required=True)
+        self.parser.add_argument('location', type=str, required=True)
+        self.parser.add_argument('message',  type=str, required=True)
+        self.parser.add_argument('name',     type=str, required=True)
+        self.parser.add_argument('phone',    type=str, required=True)
+        self.parser.add_argument('email',    type=str, required=True)
 
     def get(self):
         """

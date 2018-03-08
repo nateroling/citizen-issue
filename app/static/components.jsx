@@ -10,7 +10,7 @@ const ISSUES_URL = "/issues/";
 const REQUEST_STATE = { idle: 0, success: 1, error: 2, };
 
 // Names of columns for the IssueTable.
-const COLUMN_NAMES = ["Issue Type", "Message", "Name", "Phone", "Email"];
+const COLUMN_NAMES = ["Issue Type", "Location", "Message", "Name", "Phone", "Email"];
 
 // Placeholder text for the Issue Type <select> element.
 const ISSUE_TYPE_PLACEHOLDER = "Select an issue";
@@ -201,6 +201,7 @@ class IssueForm extends React.Component {
         // POST is handled by parent component.
         this.props.onSubmit({
             type: this.state.type,
+            location: this.state.location,
             message: this.state.message,
             name: this.state.name,
             phone: this.state.phone,
@@ -210,6 +211,7 @@ class IssueForm extends React.Component {
         // Clear form.
         this.setState({
             type: ISSUE_TYPE_PLACEHOLDER,
+            location: "",
             message: "",
             name: "",
             phone: "",
@@ -247,6 +249,7 @@ class IssueForm extends React.Component {
                     <option disabled>{ISSUE_TYPE_PLACEHOLDER}</option>
                     {ISSUE_TYPE_OPTIONS.map((issueType) => <option key={issueType}>{issueType}</option>)}
                 </select>
+                <input value={this.state.location} onChange={this.onChange} type="text" name="location" placeholder="Location" className="IssueForm__input IssueForm__location" required />
                 <textarea value={this.state.message} name="message" onChange={this.onChange} placeholder="Write your message..." className="IssueForm__input IssueForm__message" required></textarea>
                 <hr className="IssueForm__divider" />
                 <input value={this.state.name} onChange={this.onChange} type="text" name="name" placeholder="Name" className="IssueForm__input IssueForm__name" required />
@@ -280,6 +283,7 @@ class IssueTable extends React.Component {
         const rows = this.props.issues.map((issue) => 
             <tr key={issue.id}>
                 <td>{issue.type}</td>
+                <td>{issue.location}</td>
                 <td>{issue.message}</td>
                 <td>{issue.name}</td>
                 <td>{issue.phone}</td>
