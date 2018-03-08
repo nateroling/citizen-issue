@@ -18,6 +18,11 @@ To run the application with [Docker](https://www.docker.com/community-edition), 
 
     docker-compose up
 
+The application will be available at http://localhost:5000.
+
+When finished, run `docker-compose down` to stop and remove the container.
+### Running with Python
+
 Alternately, install the required packages and run with Python:
 
     pip install -r app/requirements.txt
